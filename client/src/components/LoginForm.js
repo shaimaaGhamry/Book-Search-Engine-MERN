@@ -11,7 +11,7 @@ const LoginForm = () => {
   const [userFormData, setUserFormData] = useState({ email: '', password: '' });
   const [validated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const loginUser = useMutation(LOGIN_USER);
+  const [loginUser,{error}] = useMutation(LOGIN_USER);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -20,7 +20,7 @@ const LoginForm = () => {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-
+console.log("INSIDE SUBMIT LOGIN");
     // check if form has everything (as per react-bootstrap docs)
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
@@ -29,17 +29,21 @@ const LoginForm = () => {
     }
 
     try {
-      const {token, user} = await loginUser(...userFormData);     
-
-      console.log(user);
-      Auth.login(token);
+      
+      const {data} = await loginUser(
+        {variables: {...userFormData}});     
+        
+      
+      console.log(data.login.user);
+      console.log(data.login.token);
+     Auth.login(data.login.token);
     } catch (err) {
+      console.log("EROR IN LOGIN");
       console.error(err);
       setShowAlert(true);
     }
 
     setUserFormData({
-      username: '',
       email: '',
       password: '',
     });
