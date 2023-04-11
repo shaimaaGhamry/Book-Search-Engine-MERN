@@ -83,22 +83,27 @@ const resolvers = {
            
             throw new AuthenticationError("u need to login") 
         },
-        removeBook: async(parent, {bookIdArg}, context) => {
-            console.log("remove book");
+        removeBook: async(parent, {bookId}, context) => {
+            console.log("remove book" + bookId);
             if(context.user){
                 console.log(context.user);
                 console.log("==========");
-                const user =await User.findOneAndUpdate(
-                    { _id: context.user._id },
-                    { $pull: { savedBooks: { 
-                        bookId: bookIdArg,
-                    } } },
-                    {runValidators: true,new: true }
-                  ); 
-                  console.log(user.savedBooks.length);
-
-                    console.log(user);
-                return user;
+                try{
+                    const user =await User.findOneAndUpdate(
+                        { _id: context.user._id },
+                        { $pull: { savedBooks: { 
+                            bookId: bookId,
+                        } } },
+                        {runValidators: true,new: true }
+                      ); 
+                      console.log(user.savedBooks.length);
+    
+                        console.log(user);
+                    return user;
+                }catch(err){
+                    console.log(err);
+                }
+                
             }
             throw new AuthenticationError("u need to login")
         }
